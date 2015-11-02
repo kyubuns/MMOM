@@ -8,6 +8,8 @@ Game_Interpreter.prototype.pluginCommand = (command, args) ->
         $gameSystem.sendMove()
       when "SendEnter"
         $gameSystem.sendEnter(args[1])
+      when "OpenURL"
+        $gameSystem.openUrl(args[1])
 
 
 Game_System.prototype.networkConnect = ->
@@ -69,3 +71,6 @@ Game_System.prototype.sendEnter = (mapId) ->
     $gameSystem.networkPlayers = {}
     $gameSystem.joinPlayer(info) for info in infos
   )
+
+Game_System.prototype.openUrl = (url) ->
+  window.open(url, '_blank')
