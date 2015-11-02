@@ -6,7 +6,6 @@ port = 3030
 
 connectionNum = 0
 players = {}
-players['test_room'] = {}
 
 rooms = io.on 'connection', (socket) ->
   connectionNum += 1
@@ -15,29 +14,40 @@ rooms = io.on 'connection', (socket) ->
 
   socket.on 'disconnect', ->
     connectionNum -= 1
-    if players['test_room'][socket.id]
-      rooms.in('test_room').emit('leave_player', socket.id)
-      delete players['test_room'][socket.id]
+    if socket.currentMapId && players[socket.currentMapId][socket.id]
+      rooms.in(socket.currentMapId).emit('leave_player', socket.id)
+      delete players[socket.currentMapId][socket.id]
     console.log "[system] disconnect: #{socket.id}(Total:#{connectionNum})"
 
 
-  socket.on 'enter', (name, x, y, callback) ->
-    console.log "enter: #{socket.id}(Total:#{connectionNum})"
-    room_info = for id, info of players['test_room']
+  socket.on 'enter', (name, mapId, x, y, callback) ->
+    console.log "enter: #{socket.id} -> #{mapId} (Total:#{connectionNum})"
+
+    #前の部屋から追い出す
+    if socket.currentMapId && players[socket.currentMapId][socket.id]
+      socket.leave(socket.currentMapId)
+      rooms.in(socket.currentMapId).emit('leave_player', socket.id)
+      delete players[socket.currentMapId][socket.id]
+
+    #入れる
+    socket.currentMapId = mapId
+    players[mapId] = {} unless players[mapId]
+    room_info = for id, info of players[mapId]
       { id: info.id, name: info.name, x: info.x, y: info.y }
 
-    players['test_room'][socket.id] = { id: socket.id, name: name, x: x, y: y }
+    players[mapId][socket.id] = { id: socket.id, name: name, x: x, y: y }
 
-    rooms.in('test_room').emit('join_player', players['test_room'][socket.id])
-    socket.join('test_room')
+    rooms.in(mapId).emit('join_player', players[mapId][socket.id])
+    socket.join(mapId)
     callback(socket.id, room_info)
 
 
   socket.on 'move', (x, y) ->
-    console.log "move: #{socket.id}(#{x},#{y})"
-    players['test_room'][socket.id].x = x
-    players['test_room'][socket.id].y = y
-    rooms.in('test_room').emit('move', socket.id, x, y)
+    console.log "move: #{socket.id}[#{socket.currentMapId}](#{x},#{y})"
+    return unless socket.currentMapId
+    players[socket.currentMapId][socket.id].x = x
+    players[socket.currentMapId][socket.id].y = y
+    rooms.in(socket.currentMapId).emit('move', socket.id, x, y)
 
 
   socket.emit('ready')

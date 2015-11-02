@@ -9,6 +9,10 @@
       switch (args[0]) {
         case "Connect":
           return $gameSystem.networkConnect();
+        case "SendMove":
+          return $gameSystem.sendMove();
+        case "SendEnter":
+          return $gameSystem.sendEnter(args[1]);
       }
     }
   };
@@ -16,24 +20,14 @@
   Game_System.prototype.networkConnect = function() {
     var socket;
     console.log("network connect start");
+    $gameVariables.setValue(9, 0);
     socket = io.connect('http://localhost:3030', {
       transports: ["websocket"]
     });
     $gamePlayer.socket = socket;
     socket.on('connect', function() {
       console.log("connected!");
-      return socket.emit('enter', 'dummy', $gamePlayer.x, $gamePlayer.y, function(id, infos) {
-        var i, info, len, results;
-        console.log("entered");
-        $gamePlayer.networkId = id;
-        $gameSystem.networkPlayers = {};
-        results = [];
-        for (i = 0, len = infos.length; i < len; i++) {
-          info = infos[i];
-          results.push($gameSystem.joinPlayer(info));
-        }
-        return results;
-      });
+      return $gameVariables.setValue(9, 1);
     });
     socket.on('join_player', function(info) {
       return $gameSystem.joinPlayer(info);
@@ -79,6 +73,24 @@
       return;
     }
     return $gamePlayer.socket.emit('move', $gamePlayer.x, $gamePlayer.y);
+  };
+
+  Game_System.prototype.sendEnter = function(mapId) {
+    if (!$gamePlayer.socket) {
+      return;
+    }
+    return $gamePlayer.socket.emit('enter', 'dummy', mapId, $gamePlayer.x, $gamePlayer.y, function(id, infos) {
+      var i, info, len, results;
+      console.log("entered");
+      $gamePlayer.networkId = id;
+      $gameSystem.networkPlayers = {};
+      results = [];
+      for (i = 0, len = infos.length; i < len; i++) {
+        info = infos[i];
+        results.push($gameSystem.joinPlayer(info));
+      }
+      return results;
+    });
   };
 
 }).call(this);

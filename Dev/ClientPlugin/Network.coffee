@@ -4,21 +4,21 @@ Game_Interpreter.prototype.pluginCommand = (command, args) ->
     switch args[0]
       when "Connect"
         $gameSystem.networkConnect()
+      when "SendMove"
+        $gameSystem.sendMove()
+      when "SendEnter"
+        $gameSystem.sendEnter(args[1])
 
 
 Game_System.prototype.networkConnect = ->
   console.log("network connect start")
+  $gameVariables.setValue(9, 0)
   socket = io.connect('http://localhost:3030', {transports:["websocket"]})
   $gamePlayer.socket = socket
 
   socket.on 'connect', ->
     console.log("connected!")
-    socket.emit('enter', 'dummy', $gamePlayer.x, $gamePlayer.y, (id, infos) ->
-      console.log("entered")
-      $gamePlayer.networkId = id
-      $gameSystem.networkPlayers = {}
-      $gameSystem.joinPlayer(info) for info in infos
-    )
+    $gameVariables.setValue(9, 1)
 
   socket.on 'join_player', (info) ->
     $gameSystem.joinPlayer(info)
@@ -57,3 +57,15 @@ Game_System.prototype.sendMove = ->
     return
 
   $gamePlayer.socket.emit('move', $gamePlayer.x, $gamePlayer.y)
+
+
+Game_System.prototype.sendEnter = (mapId) ->
+  unless $gamePlayer.socket
+    return
+
+  $gamePlayer.socket.emit('enter', 'dummy', mapId, $gamePlayer.x, $gamePlayer.y, (id, infos) ->
+    console.log("entered")
+    $gamePlayer.networkId = id
+    $gameSystem.networkPlayers = {}
+    $gameSystem.joinPlayer(info) for info in infos
+  )
