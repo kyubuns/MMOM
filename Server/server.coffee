@@ -7,8 +7,6 @@ port = 3030
 connectionNum = 0
 players = {}
 players['test_room'] = {}
-players['test_room']['dummy1'] = { id: 'dummy1', name: 'dummy_name1', x: 5, y: 6 }
-players['test_room']['dummy2'] = { id: 'dummy2', name: 'dummy_name2', x: 8, y: 8 }
 
 rooms = io.on 'connection', (socket) ->
   connectionNum += 1
