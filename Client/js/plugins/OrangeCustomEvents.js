@@ -181,7 +181,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
   Game_Map.prototype.addEventAt = function(eventData, x, y, temporary) {
     eventData.x = x;
     eventData.y = y;
-    this.addEvent(eventData, temporary);
+    return this.addEvent(eventData, temporary);
   };
 
   Game_Map.prototype.spawnEvent = function(eventData, tileList, temporary) {
