@@ -21,7 +21,7 @@ rooms = io.on 'connection', (socket) ->
 
 
   socket.on 'enter', (name, mapId, x, y, callback) ->
-    console.log "enter: #{socket.id} -> #{mapId} (Total:#{connectionNum})"
+    #console.log "enter: #{socket.id} -> #{mapId} (Total:#{connectionNum})"
 
     #前の部屋から追い出す
     if socket.currentMapId && players[socket.currentMapId][socket.id]
@@ -43,7 +43,7 @@ rooms = io.on 'connection', (socket) ->
 
 
   socket.on 'move', (x, y) ->
-    console.log "move: #{socket.id}[#{socket.currentMapId}](#{x},#{y})"
+    #console.log "move: #{socket.id}[#{socket.currentMapId}](#{x},#{y})"
     return unless socket.currentMapId
     players[socket.currentMapId][socket.id].x = x
     players[socket.currentMapId][socket.id].y = y
