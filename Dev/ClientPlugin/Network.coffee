@@ -15,7 +15,7 @@ Game_Interpreter.prototype.pluginCommand = (command, args) ->
 Game_System.prototype.networkConnect = ->
   console.log("network connect start")
   $gameVariables.setValue(9, 0)
-  socket = io.connect('http://kyubuns.net:3030', {transports:["websocket"]})
+  socket = io.connect('http://kyubuns.net:3030', { transports:["websocket"], forceNew: true })
   $gamePlayer.socket = socket
 
   socket.on 'connect', ->
@@ -74,3 +74,13 @@ Game_System.prototype.sendEnter = (mapId) ->
 
 Game_System.prototype.openUrl = (url) ->
   window.open(url, '_blank')
+
+
+
+_Scene_Title_create = Scene_Title.prototype.create
+Scene_Title.prototype.create = ->
+  _Scene_Title_create.call(this)
+  if $gamePlayer.socket
+    console.log('release')
+    $gamePlayer.socket.disconnect()
+    $gamePlayer.socket = null
