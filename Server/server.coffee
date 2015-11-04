@@ -54,6 +54,14 @@ rooms = io.on 'connection', (socket) ->
     rooms.in(socket.currentMapId).emit('move', socket.id, x, y)
 
 
+  socket.on 'tile', (index, tileId) ->
+    return unless socket.currentMapId
+    return if index >= mapData.length
+    return if tileId > 3000
+    mapData[socket.currentMapId][index] = tileId
+    rooms.in(socket.currentMapId).emit('tile', index, tileId)
+
+
   socket.emit('ready')
 
 

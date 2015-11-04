@@ -33,6 +33,9 @@ Game_System.prototype.networkConnect = ->
       $gameSystem.networkPlayers[networkId].x = x
       $gameSystem.networkPlayers[networkId].y = y
 
+  socket.on 'tile', (index, tileId) ->
+    $dataMap.data[index] = $gameTemp.tileId
+
   console.log("network connect finish")
 
 
@@ -54,6 +57,13 @@ Game_System.prototype.getNetworkPlayerInfo = (networkId) ->
     $gameVariables.setValue(10, 0)
 
 
+Game_System.prototype.sendTile = (index, tileId) ->
+  unless $gamePlayer.socket
+    return
+
+  $gamePlayer.socket.emit('tile', index, tileId)
+
+
 Game_System.prototype.sendMove = ->
   unless $gamePlayer.socket
     return
@@ -70,8 +80,11 @@ Game_System.prototype.sendEnter = (mapId) ->
     $gamePlayer.networkId = id
     $gameSystem.networkPlayers = {}
     $gameSystem.joinPlayer(info) for info in members
-    console.log(map)
-    $dataMap.data = map if map
+
+    #$dataMap.data = map とすると参照が死ぬ
+    if map
+      for val,i in map
+        $dataMap.data[i] = val
   )
 
 Game_System.prototype.openUrl = (url) ->
@@ -93,9 +106,9 @@ Game_Temp.prototype.setDestination = (x, y) ->
   if $gameTemp.createMode
     width = $dataMap.width
     height = $dataMap.height
-    z = $gameTemp.spriteLayer
+    z = $gameTemp.tileLayer
     index = [(z * height + y) * width + x]
-    $dataMap.data[index] = $gameTemp.spriteId
+    $gameSystem.sendTile(index, $gameTemp.tileId)
   else
     _Game_Temp_setDestination.call(this, x, y)
 
@@ -119,20 +132,20 @@ Scene_Menu.prototype.commandNormal = ->
 
 Scene_Menu.prototype.commandItem1 = ->
   $gameTemp.createMode = true
-  $gameTemp.spriteId = 2816
-  $gameTemp.spriteLayer = 1
+  $gameTemp.tileId = 2816
+  $gameTemp.tileLayer = 1
   this.popScene()
 
 Scene_Menu.prototype.commandItem2 = ->
   $gameTemp.createMode = true
-  $gameTemp.spriteId = 2920
-  $gameTemp.spriteLayer = 1
+  $gameTemp.tileId = 2920
+  $gameTemp.tileLayer = 1
   this.popScene()
 
 Scene_Menu.prototype.commandItem3 = ->
   $gameTemp.createMode = true
-  $gameTemp.spriteId = 1
-  $gameTemp.spriteLayer = 3
+  $gameTemp.tileId = 1
+  $gameTemp.tileLayer = 3
   this.popScene()
 
 Scene_Menu.prototype.create = ->

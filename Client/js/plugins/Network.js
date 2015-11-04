@@ -46,6 +46,9 @@
         return $gameSystem.networkPlayers[networkId].y = y;
       }
     });
+    socket.on('tile', function(index, tileId) {
+      return $dataMap.data[index] = $gameTemp.tileId;
+    });
     return console.log("network connect finish");
   };
 
@@ -71,6 +74,13 @@
     }
   };
 
+  Game_System.prototype.sendTile = function(index, tileId) {
+    if (!$gamePlayer.socket) {
+      return;
+    }
+    return $gamePlayer.socket.emit('tile', index, tileId);
+  };
+
   Game_System.prototype.sendMove = function() {
     if (!$gamePlayer.socket) {
       return;
@@ -83,17 +93,21 @@
       return;
     }
     return $gamePlayer.socket.emit('enter', 'dummy', mapId, $gamePlayer.x, $gamePlayer.y, function(id, members, map) {
-      var i, info, len;
+      var i, info, j, k, len, len1, results, val;
       console.log("entered");
       $gamePlayer.networkId = id;
       $gameSystem.networkPlayers = {};
-      for (i = 0, len = members.length; i < len; i++) {
-        info = members[i];
+      for (j = 0, len = members.length; j < len; j++) {
+        info = members[j];
         $gameSystem.joinPlayer(info);
       }
-      console.log(map);
       if (map) {
-        return $dataMap.data = map;
+        results = [];
+        for (i = k = 0, len1 = map.length; k < len1; i = ++k) {
+          val = map[i];
+          results.push($dataMap.data[i] = val);
+        }
+        return results;
       }
     });
   };
@@ -120,9 +134,9 @@
     if ($gameTemp.createMode) {
       width = $dataMap.width;
       height = $dataMap.height;
-      z = $gameTemp.spriteLayer;
+      z = $gameTemp.tileLayer;
       index = [(z * height + y) * width + x];
-      return $dataMap.data[index] = $gameTemp.spriteId;
+      return $gameSystem.sendTile(index, $gameTemp.tileId);
     } else {
       return _Game_Temp_setDestination.call(this, x, y);
     }
@@ -151,22 +165,22 @@
 
   Scene_Menu.prototype.commandItem1 = function() {
     $gameTemp.createMode = true;
-    $gameTemp.spriteId = 2816;
-    $gameTemp.spriteLayer = 1;
+    $gameTemp.tileId = 2816;
+    $gameTemp.tileLayer = 1;
     return this.popScene();
   };
 
   Scene_Menu.prototype.commandItem2 = function() {
     $gameTemp.createMode = true;
-    $gameTemp.spriteId = 2920;
-    $gameTemp.spriteLayer = 1;
+    $gameTemp.tileId = 2920;
+    $gameTemp.tileLayer = 1;
     return this.popScene();
   };
 
   Scene_Menu.prototype.commandItem3 = function() {
     $gameTemp.createMode = true;
-    $gameTemp.spriteId = 1;
-    $gameTemp.spriteLayer = 3;
+    $gameTemp.tileId = 1;
+    $gameTemp.tileLayer = 3;
     return this.popScene();
   };
 
