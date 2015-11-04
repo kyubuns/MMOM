@@ -12,7 +12,7 @@ mapData[3] = JSON.parse(fs.readFileSync('map2.json').toString())
 
 rooms = io.on 'connection', (socket) ->
   connectionNum += 1
-  console.log "[system] new connection: #{socket.id}"
+  console.log "[system] new connection: #{socket.id}(Total:#{connectionNum})"
 
 
   socket.on 'disconnect', ->

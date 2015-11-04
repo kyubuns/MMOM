@@ -47,7 +47,7 @@
       }
     });
     socket.on('tile', function(index, tileId) {
-      return $dataMap.data[index] = $gameTemp.tileId;
+      return $dataMap.data[index] = tileId;
     });
     return console.log("network connect finish");
   };

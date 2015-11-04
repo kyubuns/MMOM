@@ -34,7 +34,7 @@ Game_System.prototype.networkConnect = ->
       $gameSystem.networkPlayers[networkId].y = y
 
   socket.on 'tile', (index, tileId) ->
-    $dataMap.data[index] = $gameTemp.tileId
+    $dataMap.data[index] = tileId
 
   console.log("network connect finish")
 
