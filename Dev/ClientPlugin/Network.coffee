@@ -103,7 +103,7 @@ Scene_Title.prototype.create = ->
 
 _Game_Temp_setDestination = Game_Temp.prototype.setDestination
 Game_Temp.prototype.setDestination = (x, y) ->
-  if $gameTemp.createMode
+  if $gameTemp.createMode && $dataMap
     width = $dataMap.width
     height = $dataMap.height
     z = $gameTemp.tileLayer

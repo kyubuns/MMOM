@@ -133,7 +133,7 @@
 
   Game_Temp.prototype.setDestination = function(x, y) {
     var height, index, width, z;
-    if ($gameTemp.createMode) {
+    if ($gameTemp.createMode && $dataMap) {
       width = $dataMap.width;
       height = $dataMap.height;
       z = $gameTemp.tileLayer;
