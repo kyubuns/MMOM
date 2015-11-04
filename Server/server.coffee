@@ -8,7 +8,7 @@ connectionNum = 0
 players = {}
 mapData = {}
 mapData[2] = JSON.parse(fs.readFileSync('map1.json').toString())
-mapData[3] = JSON.parse(fs.readFileSync('map2.json').toString())
+mapData[4] = JSON.parse(fs.readFileSync('map2.json').toString())
 
 rooms = io.on 'connection', (socket) ->
   connectionNum += 1
@@ -35,6 +35,7 @@ rooms = io.on 'connection', (socket) ->
 
     #入れる
     socket.currentMapId = mapId
+    console.log("moveto" + socket.currentMapId)
     players[mapId] = {} unless players[mapId]
     memberInfo = for id, info of players[mapId]
       { id: info.id, name: info.name, x: info.x, y: info.y }
@@ -57,8 +58,8 @@ rooms = io.on 'connection', (socket) ->
   socket.on 'tile', (index, tileId) ->
     return unless socket.currentMapId
     return if index >= mapData.length
-    return if tileId < 1000
-    return if tileId > 4000
+    return unless 1000 < tileId && tileId < 4000
+    return if mapData[socket.currentMapId][index] == tileId
     mapData[socket.currentMapId][index] = tileId
     rooms.in(socket.currentMapId).emit('tile', index, tileId)
 
