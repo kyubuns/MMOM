@@ -35,7 +35,6 @@ rooms = io.on 'connection', (socket) ->
 
     #入れる
     socket.currentMapId = mapId
-    console.log("moveto" + socket.currentMapId)
     players[mapId] = {} unless players[mapId]
     memberInfo = for id, info of players[mapId]
       { id: info.id, name: info.name, x: info.x, y: info.y }
