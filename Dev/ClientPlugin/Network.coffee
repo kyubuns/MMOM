@@ -15,7 +15,7 @@ Game_Interpreter.prototype.pluginCommand = (command, args) ->
 Game_System.prototype.networkConnect = ->
   console.log("network connect start")
   $gameVariables.setValue(9, 0)
-  socket = io.connect('http://kyubuns.net:3030', { transports:["websocket"], forceNew: true })
+  socket = io.connect('http://localhost:3030', { transports:["websocket"], forceNew: true })
   $gamePlayer.socket = socket
 
   socket.on 'connect', ->
@@ -84,3 +84,13 @@ Scene_Title.prototype.create = ->
     console.log('release')
     $gamePlayer.socket.disconnect()
     $gamePlayer.socket = null
+
+
+_Game_Temp_setDestination = Game_Temp.prototype.setDestination
+Game_Temp.prototype.setDestination = (x, y) ->
+  _Game_Temp_setDestination.call(this, x, y)
+  width = $dataMap.width
+  height = $dataMap.height
+  z = 0
+  index = [(z * height + y) * width + x]
+  $dataMap.data[index] = 100
