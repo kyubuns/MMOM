@@ -57,7 +57,8 @@ rooms = io.on 'connection', (socket) ->
   socket.on 'tile', (index, tileId) ->
     return unless socket.currentMapId
     return if index >= mapData.length
-    return if tileId > 3000
+    return if tileId < 1000
+    return if tileId > 4000
     mapData[socket.currentMapId][index] = tileId
     rooms.in(socket.currentMapId).emit('tile', index, tileId)
 

@@ -179,8 +179,8 @@
 
   Scene_Menu.prototype.commandItem3 = function() {
     $gameTemp.createMode = true;
-    $gameTemp.tileId = 1;
-    $gameTemp.tileLayer = 3;
+    $gameTemp.tileId = 3200;
+    $gameTemp.tileLayer = 1;
     return this.popScene();
   };
 

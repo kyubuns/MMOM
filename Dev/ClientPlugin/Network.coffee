@@ -144,8 +144,8 @@ Scene_Menu.prototype.commandItem2 = ->
 
 Scene_Menu.prototype.commandItem3 = ->
   $gameTemp.createMode = true
-  $gameTemp.tileId = 1
-  $gameTemp.tileLayer = 3
+  $gameTemp.tileId = 3200
+  $gameTemp.tileLayer = 1
   this.popScene()
 
 Scene_Menu.prototype.create = ->
