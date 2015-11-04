@@ -82,17 +82,19 @@
     if (!$gamePlayer.socket) {
       return;
     }
-    return $gamePlayer.socket.emit('enter', 'dummy', mapId, $gamePlayer.x, $gamePlayer.y, function(id, infos) {
-      var i, info, len, results;
+    return $gamePlayer.socket.emit('enter', 'dummy', mapId, $gamePlayer.x, $gamePlayer.y, function(id, members, map) {
+      var i, info, len;
       console.log("entered");
       $gamePlayer.networkId = id;
       $gameSystem.networkPlayers = {};
-      results = [];
-      for (i = 0, len = infos.length; i < len; i++) {
-        info = infos[i];
-        results.push($gameSystem.joinPlayer(info));
+      for (i = 0, len = members.length; i < len; i++) {
+        info = members[i];
+        $gameSystem.joinPlayer(info);
       }
-      return results;
+      console.log(map);
+      if (map) {
+        return $dataMap.data = map;
+      }
     });
   };
 

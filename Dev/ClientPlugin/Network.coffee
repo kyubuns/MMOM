@@ -65,11 +65,13 @@ Game_System.prototype.sendEnter = (mapId) ->
   unless $gamePlayer.socket
     return
 
-  $gamePlayer.socket.emit('enter', 'dummy', mapId, $gamePlayer.x, $gamePlayer.y, (id, infos) ->
+  $gamePlayer.socket.emit('enter', 'dummy', mapId, $gamePlayer.x, $gamePlayer.y, (id, members, map) ->
     console.log("entered")
     $gamePlayer.networkId = id
     $gameSystem.networkPlayers = {}
-    $gameSystem.joinPlayer(info) for info in infos
+    $gameSystem.joinPlayer(info) for info in members
+    console.log(map)
+    $dataMap.data = map if map
   )
 
 Game_System.prototype.openUrl = (url) ->

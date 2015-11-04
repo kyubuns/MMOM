@@ -1,11 +1,14 @@
 Server = require('socket.io')
+fs = require('fs')
 io = new Server()
 port = 3030
 
 
-
 connectionNum = 0
 players = {}
+mapData = {}
+mapData[2] = JSON.parse(fs.readFileSync('map1.json').toString())
+mapData[3] = JSON.parse(fs.readFileSync('map2.json').toString())
 
 rooms = io.on 'connection', (socket) ->
   connectionNum += 1
@@ -22,6 +25,7 @@ rooms = io.on 'connection', (socket) ->
 
   socket.on 'enter', (name, mapId, x, y, callback) ->
     #console.log "enter: #{socket.id} -> #{mapId} (Total:#{connectionNum})"
+    return unless mapData[mapId]
 
     #前の部屋から追い出す
     if socket.currentMapId && players[socket.currentMapId][socket.id]
@@ -32,14 +36,14 @@ rooms = io.on 'connection', (socket) ->
     #入れる
     socket.currentMapId = mapId
     players[mapId] = {} unless players[mapId]
-    room_info = for id, info of players[mapId]
+    memberInfo = for id, info of players[mapId]
       { id: info.id, name: info.name, x: info.x, y: info.y }
 
     players[mapId][socket.id] = { id: socket.id, name: name, x: x, y: y }
 
     rooms.in(mapId).emit('join_player', players[mapId][socket.id])
     socket.join(mapId)
-    callback(socket.id, room_info)
+    callback(socket.id, memberInfo, mapData[mapId])
 
 
   socket.on 'move', (x, y) ->
