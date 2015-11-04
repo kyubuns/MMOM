@@ -47,7 +47,9 @@
       }
     });
     socket.on('tile', function(index, tileId) {
-      return $dataMap.data[index] = tileId;
+      if ($dataMap && $dataMap.data && $dataMap.data.length > index) {
+        return $dataMap.data[index] = tileId;
+      }
     });
     return console.log("network connect finish");
   };
@@ -101,7 +103,7 @@
         info = members[j];
         $gameSystem.joinPlayer(info);
       }
-      if (map) {
+      if (map && $dataMap) {
         results = [];
         for (i = k = 0, len1 = map.length; k < len1; i = ++k) {
           val = map[i];

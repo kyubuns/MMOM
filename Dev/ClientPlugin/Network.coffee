@@ -34,7 +34,7 @@ Game_System.prototype.networkConnect = ->
       $gameSystem.networkPlayers[networkId].y = y
 
   socket.on 'tile', (index, tileId) ->
-    $dataMap.data[index] = tileId
+    $dataMap.data[index] = tileId if $dataMap && $dataMap.data && $dataMap.data.length > index
 
   console.log("network connect finish")
 
@@ -82,7 +82,7 @@ Game_System.prototype.sendEnter = (mapId) ->
     $gameSystem.joinPlayer(info) for info in members
 
     #$dataMap.data = map とすると参照が死ぬ
-    if map
+    if map && $dataMap
       for val,i in map
         $dataMap.data[i] = val
   )
