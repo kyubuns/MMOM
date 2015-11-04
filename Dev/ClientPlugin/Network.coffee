@@ -15,7 +15,7 @@ Game_Interpreter.prototype.pluginCommand = (command, args) ->
 Game_System.prototype.networkConnect = ->
   console.log("network connect start")
   $gameVariables.setValue(9, 0)
-  socket = io.connect('http://localhost:3030', { transports:["websocket"], forceNew: true })
+  socket = io.connect('http://kyubuns.net:3030', { transports:["websocket"], forceNew: true })
   $gamePlayer.socket = socket
 
   socket.on 'connect', ->

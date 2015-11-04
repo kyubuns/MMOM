@@ -23,7 +23,7 @@
     var socket;
     console.log("network connect start");
     $gameVariables.setValue(9, 0);
-    socket = io.connect('http://localhost:3030', {
+    socket = io.connect('http://kyubuns.net:3030', {
       transports: ["websocket"],
       forceNew: true
     });
