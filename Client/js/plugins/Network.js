@@ -115,12 +115,84 @@
 
   Game_Temp.prototype.setDestination = function(x, y) {
     var height, index, width, z;
-    _Game_Temp_setDestination.call(this, x, y);
-    width = $dataMap.width;
-    height = $dataMap.height;
-    z = 0;
-    index = [(z * height + y) * width + x];
-    return $dataMap.data[index] = 100;
+    if ($gameTemp.createMode) {
+      width = $dataMap.width;
+      height = $dataMap.height;
+      z = $gameTemp.spriteLayer;
+      index = [(z * height + y) * width + x];
+      return $dataMap.data[index] = $gameTemp.spriteId;
+    } else {
+      return _Game_Temp_setDestination.call(this, x, y);
+    }
+  };
+
+  Scene_Menu.prototype.start = function() {
+    return Scene_MenuBase.prototype.start.call(this);
+  };
+
+  Scene_Menu.prototype.createCommandWindow = function() {
+    this._commandWindow = new Window_MenuCommand(0, 0);
+    this._commandWindow.setHandler('normal', this.commandNormal.bind(this));
+    this._commandWindow.setHandler('item1', this.commandItem1.bind(this));
+    this._commandWindow.setHandler('item2', this.commandItem2.bind(this));
+    this._commandWindow.setHandler('item3', this.commandItem3.bind(this));
+    this._commandWindow.setHandler('gameEnd', this.commandGameEnd.bind(this));
+    this._commandWindow.setHandler('options', this.commandOptions.bind(this));
+    this._commandWindow.setHandler('cancel', this.popScene.bind(this));
+    return this.addWindow(this._commandWindow);
+  };
+
+  Scene_Menu.prototype.commandNormal = function() {
+    $gameTemp.createMode = false;
+    return this.popScene();
+  };
+
+  Scene_Menu.prototype.commandItem1 = function() {
+    $gameTemp.createMode = true;
+    $gameTemp.spriteId = 2816;
+    $gameTemp.spriteLayer = 1;
+    return this.popScene();
+  };
+
+  Scene_Menu.prototype.commandItem2 = function() {
+    $gameTemp.createMode = true;
+    $gameTemp.spriteId = 2920;
+    $gameTemp.spriteLayer = 1;
+    return this.popScene();
+  };
+
+  Scene_Menu.prototype.commandItem3 = function() {
+    $gameTemp.createMode = true;
+    $gameTemp.spriteId = 1;
+    $gameTemp.spriteLayer = 3;
+    return this.popScene();
+  };
+
+  Scene_Menu.prototype.create = function() {
+    Scene_MenuBase.prototype.create.call(this);
+    return this.createCommandWindow();
+  };
+
+  Window_MenuCommand.prototype.makeCommandList = function() {
+    this.addOriginalCommands();
+    this.addOptionsCommand();
+    this.addSaveCommand();
+    return this.addGameEndCommand();
+  };
+
+  Window_MenuCommand.prototype.addOriginalCommands = function() {
+    this.addCommand('移動モード', 'normal', true);
+    this.addCommand('設置1', 'item1', true);
+    this.addCommand('設置2', 'item2', true);
+    return this.addCommand('設置3', 'item3', true);
+  };
+
+  Scene_Map.prototype.create = function() {
+    Scene_Base.prototype.create.call(this);
+    this._transfer = $gamePlayer.isTransferring();
+    if (this._transfer) {
+      return DataManager.loadMapData($gamePlayer.newMapId());
+    }
   };
 
 }).call(this);

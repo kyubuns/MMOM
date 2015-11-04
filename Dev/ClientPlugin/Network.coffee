@@ -88,9 +88,70 @@ Scene_Title.prototype.create = ->
 
 _Game_Temp_setDestination = Game_Temp.prototype.setDestination
 Game_Temp.prototype.setDestination = (x, y) ->
-  _Game_Temp_setDestination.call(this, x, y)
-  width = $dataMap.width
-  height = $dataMap.height
-  z = 0
-  index = [(z * height + y) * width + x]
-  $dataMap.data[index] = 100
+  if $gameTemp.createMode
+    width = $dataMap.width
+    height = $dataMap.height
+    z = $gameTemp.spriteLayer
+    index = [(z * height + y) * width + x]
+    $dataMap.data[index] = $gameTemp.spriteId
+  else
+    _Game_Temp_setDestination.call(this, x, y)
+
+Scene_Menu.prototype.start = ->
+    Scene_MenuBase.prototype.start.call(this)
+
+Scene_Menu.prototype.createCommandWindow = ->
+  this._commandWindow = new Window_MenuCommand(0, 0)
+  this._commandWindow.setHandler('normal',    this.commandNormal.bind(this))
+  this._commandWindow.setHandler('item1',     this.commandItem1.bind(this))
+  this._commandWindow.setHandler('item2',     this.commandItem2.bind(this))
+  this._commandWindow.setHandler('item3',     this.commandItem3.bind(this))
+  this._commandWindow.setHandler('gameEnd',   this.commandGameEnd.bind(this))
+  this._commandWindow.setHandler('options',   this.commandOptions.bind(this))
+  this._commandWindow.setHandler('cancel',    this.popScene.bind(this))
+  this.addWindow(this._commandWindow)
+
+Scene_Menu.prototype.commandNormal = ->
+  $gameTemp.createMode = false
+  this.popScene()
+
+Scene_Menu.prototype.commandItem1 = ->
+  $gameTemp.createMode = true
+  $gameTemp.spriteId = 2816
+  $gameTemp.spriteLayer = 1
+  this.popScene()
+
+Scene_Menu.prototype.commandItem2 = ->
+  $gameTemp.createMode = true
+  $gameTemp.spriteId = 2920
+  $gameTemp.spriteLayer = 1
+  this.popScene()
+
+Scene_Menu.prototype.commandItem3 = ->
+  $gameTemp.createMode = true
+  $gameTemp.spriteId = 1
+  $gameTemp.spriteLayer = 3
+  this.popScene()
+
+Scene_Menu.prototype.create = ->
+  Scene_MenuBase.prototype.create.call(this)
+  this.createCommandWindow()
+
+Window_MenuCommand.prototype.makeCommandList = ->
+  this.addOriginalCommands()
+  this.addOptionsCommand()
+  this.addSaveCommand()
+  this.addGameEndCommand()
+
+Window_MenuCommand.prototype.addOriginalCommands = ->
+  this.addCommand('移動モード', 'normal', true)
+  this.addCommand('設置1', 'item1', true)
+  this.addCommand('設置2', 'item2', true)
+  this.addCommand('設置3', 'item3', true)
+
+
+Scene_Map.prototype.create = ->
+    Scene_Base.prototype.create.call(this)
+    this._transfer = $gamePlayer.isTransferring()
+    if this._transfer
+      DataManager.loadMapData($gamePlayer.newMapId())
